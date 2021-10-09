@@ -1,0 +1,9 @@
+{
+    "window.zoomLevel": 0,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "css.lint.unknownAtRules": "ignore"
+}
