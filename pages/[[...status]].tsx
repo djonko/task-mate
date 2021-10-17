@@ -1,3 +1,4 @@
+// This page is dynamic route https://nextjs.org/docs/api-routes/dynamic-api-routes
 import Head from "next/head";
 import { useRouter } from "next/router";
 import CreateTaskForm from "../componens/CreateTaskForm";
@@ -14,6 +15,7 @@ import {
 import { initializeApollo } from "../lib/client";
 import { GetServerSideProps } from "next";
 import { useEffect, useRef } from "react";
+import Custom404 from "./404";
 
 const isTaskStatus = (value: string): value is TaskStatus =>
   Object.values(TaskStatus).includes(value as TaskStatus);
@@ -21,8 +23,12 @@ const isTaskStatus = (value: string): value is TaskStatus =>
 export default function Home() {
   const router = useRouter();
 
+  //console.log(router.query?.status);
+
   const status =
-    typeof router.query?.status === "string" ? router.query?.status : undefined;
+    Array.isArray(router.query?.status) && router.query?.status.length
+      ? router.query?.status[0]
+      : undefined;
 
   const prevStatus = useRef(status);
   useEffect(() => {
@@ -30,7 +36,7 @@ export default function Home() {
   }, [status]);
 
   if (status !== undefined && !isTaskStatus(status)) {
-    return <Error statusCode={404} />;
+    return <Custom404 />;
   }
   const result = useTasksQuery({
     variables: { status },
@@ -68,6 +74,7 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  console.log(context.params?.status);
   const status =
     typeof context.params?.status === "string"
       ? context.params.status

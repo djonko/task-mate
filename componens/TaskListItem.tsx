@@ -52,9 +52,12 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task }) => {
     const newStatus = e.target.checked
       ? TaskStatus.Completed
       : TaskStatus.Active;
-    await updateTask({
-      variables: { updatedTask: { id: task.id, status: newStatus } },
-    });
+
+    try {
+      await updateTask({
+        variables: { updatedTask: { id: task.id, status: newStatus } },
+      });
+    } catch (error) {}
   };
 
   useEffect(() => {
