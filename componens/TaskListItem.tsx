@@ -44,22 +44,34 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task }) => {
     }
   }, [error]);
 
-  const isCompletedTask = (status: Maybe<TaskStatus> | undefined): boolean => {
-    return status && status === TaskStatus.Completed ? true : false;
-  };
-
-  const [updateTask] = useUpdateTaskMutation({ errorPolicy: "all" });
+  const [updateTask, { loading: updateTaskLoading, error: updateTaskError }] =
+    useUpdateTaskMutation({
+      errorPolicy: "all",
+    });
   const handleStatusChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newStatus = e.target.checked
       ? TaskStatus.Completed
       : TaskStatus.Active;
-    await up();
+    await updateTask({
+      variables: { updatedTask: { id: task.id, status: newStatus } },
+    });
   };
+
+  useEffect(() => {
+    if (updateTaskError) {
+      alert("An error occurred, please try again.");
+    }
+  }, [updateTaskError]);
 
   return (
     <li key={task.id} className="task-list-item">
       <label className="checkbox">
-        <input type="checkbox" onChange={handleStatusChange} />
+        <input
+          type="checkbox"
+          onChange={handleStatusChange}
+          checked={task.status === TaskStatus.Completed}
+          disabled={updateTaskLoading}
+        />
         <span className="checkbox-mark">&#10003;</span>
       </label>
       <Link href="/update/[id]" as={`/update/${task.id}`}>
