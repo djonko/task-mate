@@ -35,6 +35,8 @@ export function initializeApollo(initialState: MyApolloCache | null = null) {
   // gets hydrated here
   if (initialState) {
     _apolloClient.cache.restore(initialState);
+    const existingCache = _apolloClient.extract();
+    _apolloClient.cache.restore({ ...existingCache, ...initialState });
   }
   // For SSG and SSR always create a new Apollo Client
   if (typeof window === "undefined") return _apolloClient;

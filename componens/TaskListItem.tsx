@@ -1,7 +1,13 @@
 import { Reference } from "@apollo/client";
 import Link from "next/link";
 import React, { useEffect } from "react";
-import { Task, useDeleteTaskMutation } from "../generated/graphql-frontend";
+import {
+  Maybe,
+  Task,
+  TaskStatus,
+  useDeleteTaskMutation,
+  useUpdateTaskMutation,
+} from "../generated/graphql-frontend";
 
 interface TaskListItemProps {
   task: Task;
@@ -38,8 +44,24 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task }) => {
     }
   }, [error]);
 
+  const isCompletedTask = (status: Maybe<TaskStatus> | undefined): boolean => {
+    return status && status === TaskStatus.Completed ? true : false;
+  };
+
+  const [updateTask] = useUpdateTaskMutation({ errorPolicy: "all" });
+  const handleStatusChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newStatus = e.target.checked
+      ? TaskStatus.Completed
+      : TaskStatus.Active;
+    await up();
+  };
+
   return (
     <li key={task.id} className="task-list-item">
+      <label className="checkbox">
+        <input type="checkbox" onChange={handleStatusChange} />
+        <span className="checkbox-mark">&#10003;</span>
+      </label>
       <Link href="/update/[id]" as={`/update/${task.id}`}>
         <a className="task-list-item-title">{task.title}</a>
       </Link>

@@ -1,7 +1,7 @@
-query Tasks {
-  tasks {
+query Tasks($status: TaskStatus) {
+  tasks(status: $status) {
     id
-    title
     status
+    title
   }
 }
